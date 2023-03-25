@@ -27,22 +27,28 @@ public class PaymentServiceImpl implements PaymentService {
         if(amountSent < bill){
             throw new Exception("Insufficient Amount");
         }
-        Payment payment = new Payment();
-        payment.setPaymentCompleted(true);
+        if(mode.equalsIgnoreCase("cash") || mode.equalsIgnoreCase("card") || mode.equalsIgnoreCase("upi") ){
+            Payment payment=new Payment();
 
-        mode = mode.toUpperCase();
-        if(mode.equals("CASH")){
-            payment.setPaymentMode(PaymentMode.CASH);
+            if(mode.equalsIgnoreCase("cash")){
+                payment.setPaymentMode(PaymentMode.CASH);
+            }
+            else if(mode.equalsIgnoreCase("card")){
+                payment.setPaymentMode(PaymentMode.CARD);
+            }
+            else payment.setPaymentMode(PaymentMode.UPI);
+
+            payment.setPaymentCompleted(true);
+            payment.setReservation(reservation);
+
+            reservation.setPayment(payment);
+
+
+
+            reservationRepository2.save(reservation);
+
+            return payment;
         }
-        else if(mode.equals("CARD")){
-            payment.setPaymentMode(PaymentMode.CARD);
-        }
-        else if(mode.equals("UPI")){
-            payment.setPaymentMode(PaymentMode.UPI);
-        }
-        else {
-            throw new Exception("Payment mode not detected");
-        }
-        return payment;
+        else throw new Exception("Payment mode not detected");
     }
 }
